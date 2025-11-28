@@ -77,9 +77,7 @@ class Reservation {
       updatedAt: json['update_at'],
       user: json['user'] != null ? User.fromJson(json['user']) : null,
       room: json['room'] != null ? Room.fromJson(json['room']) : null,
-      payment: json['payment'] != null
-          ? Payment.fromJson(json['payment'])
-          : null,
+      payment: json['payment'] != null ? Payment.fromJson(json['payment']) : null,
     );
   }
 
