@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:hotel_reservation/config/constants.dart';
 import 'package:hotel_reservation/models/notification.dart';
 import 'api_service.dart';
