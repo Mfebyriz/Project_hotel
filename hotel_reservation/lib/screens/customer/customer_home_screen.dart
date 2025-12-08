@@ -76,7 +76,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
     );
 
     if (confirm == true) {
-      await AuthService.logout();
+      await AuthService.Logout();
       if (mounted) {
         Navigator.pushAndRemoveUntil(
           context,
