@@ -9,7 +9,7 @@ import 'reservation_history_screen.dart';
 import 'notification_screen.dart';
 
 class CustomerHomeScreen extends StatefulWidget {
-  const CustomerHomeScreen({Key? key}) : super(key: key);
+  const CustomerHomeScreen({super.key});
 
   @override
   State<CustomerHomeScreen> createState() => _CustomerHomeScreenState();

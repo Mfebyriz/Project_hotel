@@ -4,7 +4,7 @@ import '../../models/reservation.dart';
 import '../../services/reservation_service.dart';
 
 class ReservationHistoryScreen extends StatefulWidget {
-  const ReservationHistoryScreen({Key? key}) : super(key: key);
+  const ReservationHistoryScreen({super.key});
 
   @override
   State<ReservationHistoryScreen> createState() =>
