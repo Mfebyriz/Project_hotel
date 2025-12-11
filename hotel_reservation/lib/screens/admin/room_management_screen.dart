@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/room.dart';
 import '../../services/room_service.dart';
-import 'room_form_management_screen.dart';
+import 'room_form_screen.dart';
 
 class RoomManagementScreen extends StatefulWidget {
   const RoomManagementScreen({Key? key}) : super(key: key);
