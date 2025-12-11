@@ -6,7 +6,7 @@ import 'package:hotel_reservation/screens/admin/admin_dashboard_screen.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -101,9 +101,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 8),
                   Text(
                     'Login ke akun Anda',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.grey,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyLarge?.copyWith(color: Colors.grey),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 40),
@@ -140,7 +140,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       prefixIcon: const Icon(Icons.lock),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                          _obscurePassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                         ),
                         onPressed: () {
                           setState(() => _obscurePassword = !_obscurePassword);
@@ -176,7 +178,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           )
                         : const Text(
                             'Login',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                   ),
                   const SizedBox(height: 16),
@@ -190,7 +195,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                            MaterialPageRoute(
+                              builder: (_) => const RegisterScreen(),
+                            ),
                           );
                         },
                         child: const Text('Daftar'),

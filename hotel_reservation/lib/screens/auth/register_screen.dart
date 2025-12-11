@@ -3,7 +3,7 @@ import 'package:hotel_reservation/services/auth_service.dart';
 import 'package:hotel_reservation/screens/customer/customer_home_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+  const RegisterScreen({Key? key}) : super(key: key);
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -37,21 +37,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     try {
       await AuthService.register(
-        name: _nameController,
-        email: _emailController,
-        password: _passwordController,
-        passwordConfirmation: _passwordConfirmationController,
+        name: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        passwordConfirmation: _passwordConfirmationController.text,
         phone: _phoneController.text.trim(),
       );
 
-      if  (!mounted) return;
+      if (!mounted) return;
 
       // Navigate ke customer home
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => const CustomerHomeScreen()),
         (route) => false,
-        );
+      );
     } catch (e) {
       if (!mounted) return;
 
@@ -59,7 +59,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         SnackBar(
           content: Text(e.toString().replaceAll('Exception:', '')),
           backgroundColor: Colors.red,
-          ),
+        ),
       );
     } finally {
       if (mounted) {
@@ -71,9 +71,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Daftar Akun'),
-      ),
+      appBar: AppBar(title: const Text('Daftar Akun')),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -164,7 +162,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                        _obscurePassword
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                       ),
                       onPressed: () {
                         setState(() => _obscurePassword = !_obscurePassword);
@@ -195,10 +195,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePasswordConfirmation ? Icons.visibility : Icons.visibility_off,
+                        _obscurePasswordConfirmation
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                       ),
                       onPressed: () {
-                        setState(() => _obscurePasswordConfirmation = !_obscurePasswordConfirmation);
+                        setState(
+                          () => _obscurePasswordConfirmation =
+                              !_obscurePasswordConfirmation,
+                        );
                       },
                     ),
                     border: OutlineInputBorder(
@@ -228,14 +233,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   child: _isLoading
                       ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : const Text(
-                        'Daftar',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
+                          'Daftar',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
               ],
             ),
