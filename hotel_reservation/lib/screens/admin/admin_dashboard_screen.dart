@@ -15,12 +15,17 @@ class AdminDashboardScreen extends StatefulWidget {
 }
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
-  User? user;
+  User? _user;
 
   @override
   void initState() {
     super.initState();
     _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    final user = await AuthService.getSavedUser();
+    setState(() => _user = user);
   }
 
   Future<void> _logout() async {

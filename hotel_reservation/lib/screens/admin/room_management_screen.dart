@@ -7,7 +7,7 @@ class RoomManagementScreen extends StatefulWidget {
   const RoomManagementScreen({Key? key}) : super(key: key);
 
   @override
-  State<RoomManagementScreen> createdState() => _RoomManaagementScreenState();
+  State<RoomManagementScreen> createState() => _RoomManaagementScreenState();
 }
 
 class _RoomManaagementScreenState extends State<RoomManagementScreen> {

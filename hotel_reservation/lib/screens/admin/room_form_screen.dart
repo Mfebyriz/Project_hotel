@@ -5,10 +5,10 @@ import '../../services/room_service.dart';
 class RoomFormScreen extends StatefulWidget {
   final Room? room;
 
-  const RoomFormScreen({Key? key, this.room}) :super(key: key);
+  const RoomFormScreen({Key? key, this.room});
 
   @override
-  State<RoomFormScreen> createdState() => _RoomFormScreenState();
+  State<RoomFormScreen> createState() => _RoomFormScreenState();
 }
 
 class _RoomFormScreenState extends State<RoomFormScreen> {
@@ -180,7 +180,7 @@ class _RoomFormScreenState extends State<RoomFormScreen> {
               const SizedBox(height: 16),
 
               DropdownButtonFormField<String>(
-                value: _status,
+                initialValue: _status,
                 decoration: const InputDecoration(
                   labelText: 'Status',
                   border: OutlineInputBorder(),
