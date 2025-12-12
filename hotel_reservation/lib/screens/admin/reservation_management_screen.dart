@@ -6,7 +6,7 @@ import '../../services/api_service.dart';
 import '../../config/constants.dart';
 
 class ReservationManagementScreen extends StatefulWidget {
-  const ReservationManagementScreen({Key? key}) : super(key: key);
+  const ReservationManagementScreen({super.key});
 
   @override
   State<ReservationManagementScreen> createState() => _ReservationManagementScreenState();

@@ -188,7 +188,10 @@ class _RoomFormScreenState extends State<RoomFormScreen> {
                 items: const [
                   DropdownMenuItem(value: 'available', child: Text('Tersedia')),
                   DropdownMenuItem(value: 'occupied', child: Text('Terisi')),
-                  DropdownMenuItem(value: 'maintenance', child: Text('Maintenance')),
+                  DropdownMenuItem(
+                    value: 'maintenance',
+                    child: Text('Maintenance'),
+                  ),
                 ],
                 onChanged: (value) {
                   if (value != null) {
@@ -231,7 +234,7 @@ class _RoomFormScreenState extends State<RoomFormScreen> {
                     : Text(
                         widget.room == null ? 'Tambah Kamar' : 'Update Kamar',
                         style: const TextStyle(fontSize: 16),
-                    ),
+                      ),
               ),
             ],
           ),
