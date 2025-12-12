@@ -8,7 +8,7 @@ import 'reservation_management_screen.dart';
 import 'report_screen.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
-  const AdminDashboardScreen({super.key});
+  const AdminDashboardScreen({Key? key}) : super(key: key);
 
   @override
   State<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
@@ -65,10 +65,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       appBar: AppBar(
         title: const Text('Admin Dashboard'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: _logout,
-          ),
+          IconButton(icon: const Icon(Icons.logout), onPressed: _logout),
         ],
       ),
       body: SingleChildScrollView(
@@ -137,7 +134,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const RoomManagementScreen()),
+                      MaterialPageRoute(
+                        builder: (_) => const RoomManagementScreen(),
+                      ),
                     );
                   },
                 ),
@@ -148,7 +147,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const CustomerManagementScreen()),
+                      MaterialPageRoute(
+                        builder: (_) => const CustomerManagementScreen(),
+                      ),
                     );
                   },
                 ),
@@ -159,7 +160,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const ReservationManagementScreen()),
+                      MaterialPageRoute(
+                        builder: (_) => const ReservationManagementScreen(),
+                      ),
                     );
                   },
                 ),

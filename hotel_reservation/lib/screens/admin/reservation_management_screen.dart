@@ -6,13 +6,15 @@ import '../../services/api_service.dart';
 import '../../config/constants.dart';
 
 class ReservationManagementScreen extends StatefulWidget {
-  const ReservationManagementScreen({super.key});
+  const ReservationManagementScreen({Key? key}) : super(key: key);
 
   @override
-  State<ReservationManagementScreen> createState() => _ReservationManagementScreenState();
+  State<ReservationManagementScreen> createState() =>
+      _ReservationManagementScreenState();
 }
 
-class _ReservationManagementScreenState extends State<ReservationManagementScreen> {
+class _ReservationManagementScreenState
+    extends State<ReservationManagementScreen> {
   List<Reservation> _reservations = [];
   bool _isLoading = true;
   String _filterStatus = 'all';
@@ -37,9 +39,9 @@ class _ReservationManagementScreenState extends State<ReservationManagementScree
     } catch (e) {
       setState(() => _isLoading = false);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
       }
     }
   }
@@ -49,9 +51,9 @@ class _ReservationManagementScreenState extends State<ReservationManagementScree
       await ReservationService.checkIn(reservation.id);
       _loadReservations();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Check-in berhasil')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Check-in berhasil')));
       }
     } catch (e) {
       if (mounted) {
@@ -75,7 +77,9 @@ class _ReservationManagementScreenState extends State<ReservationManagementScree
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Check-out Berhasil'),
-            content: const Text('Tamu telah check-out. Silahkan proses pembayaran.'),
+            content: const Text(
+              'Tamu telah check-out. Silahkan proses pembayaran.',
+            ),
             actions: [
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
@@ -153,9 +157,7 @@ class _ReservationManagementScreenState extends State<ReservationManagementScree
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Kelola Reservasi'),
-      ),
+      appBar: AppBar(title: const Text('Kelola Reservasi')),
       body: Column(
         children: [
           // Filter
@@ -180,16 +182,15 @@ class _ReservationManagementScreenState extends State<ReservationManagementScree
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : _reservations.isEmpty
-                      ? const Center(child: Text('Tidak ada reservasi'))
-                      : ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _reservations.length,
-                        itemBuilder: (context, index) {
-                          final reservation = _reservations[index];
-                          return _buildReservationCard(reservation);
-                        },
-                      )
-
+                  ? const Center(child: Text('Tidak ada reservasi'))
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: _reservations.length,
+                      itemBuilder: (context, index) {
+                        final reservation = _reservations[index];
+                        return _buildReservationCard(reservation);
+                      },
+                    ),
             ),
           ),
         ],
@@ -247,7 +248,10 @@ class _ReservationManagementScreenState extends State<ReservationManagementScree
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: _getStatusColor(reservation.status),
                     borderRadius: BorderRadius.circular(4),
@@ -295,29 +299,29 @@ class _ReservationManagementScreenState extends State<ReservationManagementScree
 
             // Payment Info
             if (payment != null && payment.lateFee > 0)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.orange.shade50,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.warning, color: Colors.orange, size: 16),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Denda: Rp ${payment.lateFee.toStringAsFixed(0)}',
-                      style: const TextStyle(
-                        color: Colors.orange,
-                        fontWeight: FontWeight.bold,
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade50,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.warning, color: Colors.orange, size: 16),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Denda: Rp ${payment.lateFee.toStringAsFixed(0)}',
+                        style: const TextStyle(
+                          color: Colors.orange,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
 
             // Actions
             const SizedBox(height: 12),
@@ -354,8 +358,15 @@ class _ReservationManagementScreenState extends State<ReservationManagementScree
                   ),
                 if (payment != null && payment.isPaid())
                   Chip(
-                    avatar: const Icon(Icons.check_circle, size: 16, color: Colors.white),
-                    label: const Text('Lunas', style: TextStyle(color: Colors.white)),
+                    avatar: const Icon(
+                      Icons.check_circle,
+                      size: 16,
+                      color: Colors.white,
+                    ),
+                    label: const Text(
+                      'Lunas',
+                      style: TextStyle(color: Colors.white),
+                    ),
                     backgroundColor: Colors.green,
                   ),
               ],

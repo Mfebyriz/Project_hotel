@@ -5,7 +5,7 @@ import 'booking_screen.dart';
 class RoomDetailScreen extends StatelessWidget {
   final Room room;
 
-  const RoomDetailScreen({super.key, required this.room});
+  const RoomDetailScreen({Key? key, required this.room}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -3,7 +3,7 @@ import 'package:hotel_reservation/services/auth_service.dart';
 import 'package:hotel_reservation/screens/customer/customer_home_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+  const RegisterScreen({Key? key}) : super(key: key);
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();

@@ -5,7 +5,7 @@ import '../../services/room_service.dart';
 class RoomFormScreen extends StatefulWidget {
   final Room? room;
 
-  const RoomFormScreen({Key? key, this.room});
+  const RoomFormScreen({Key? key, this.room}) : super(key: key);
 
   @override
   State<RoomFormScreen> createState() => _RoomFormScreenState();

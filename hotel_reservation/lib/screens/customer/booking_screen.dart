@@ -7,7 +7,7 @@ import 'customer_home_screen.dart';
 class BookingScreen extends StatefulWidget {
   final Room room;
 
-  const BookingScreen({super.key, required this.room});
+  const BookingScreen({Key? key, required this.room}) : super(key: key);
 
   @override
   State<BookingScreen> createState() => _BookingScreenState();

@@ -1,3 +1,7 @@
+import 'user.dart';
+import 'room.dart';
+import 'payment.dart';
+
 class Reservation {
   final int id;
   final int userId;
@@ -43,9 +47,9 @@ class Reservation {
         return 'Menunggu';
       case 'confirmed':
         return 'Dikonfirmasi';
-      case 'check_in':
+      case 'checked_in':
         return 'Check-in';
-      case 'check_out':
+      case 'checked_out':
         return 'Check-out';
       case 'cancelled':
         return 'Dibatalkan';
@@ -55,7 +59,7 @@ class Reservation {
   }
 
   bool isPending() => status == 'pending';
-  bool isConfirmed() => status == 'cornfirmed';
+  bool isConfirmed() => status == 'confirmed';
   bool isCheckedIn() => status == 'checked_in';
   bool isCheckedOut() => status == 'checked_out';
   bool isCancelled() => status == 'cancelled';
@@ -70,14 +74,16 @@ class Reservation {
       actualCheckIn: json['actual_check_in'],
       actualCheckOut: json['actual_check_out'],
       totalNights: json['total_nights'],
-      totalPrice: double.parse(json['total_price']),
+      totalPrice: double.parse(json['total_price'].toString()),
       status: json['status'],
       notes: json['notes'],
-      createdAt: json['creatrd_at'],
-      updatedAt: json['update_at'],
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
       user: json['user'] != null ? User.fromJson(json['user']) : null,
       room: json['room'] != null ? Room.fromJson(json['room']) : null,
-      payment: json['payment'] != null ? Payment.fromJson(json['payment']) : null,
+      payment: json['payment'] != null
+          ? Payment.fromJson(json['payment'])
+          : null,
     );
   }
 
@@ -89,7 +95,7 @@ class Reservation {
       'check_in_date': checkInDate,
       'check_out_date': checkOutDate,
       'actual_check_in': actualCheckIn,
-      'actual_check_out': checkOutDate,
+      'actual_check_out': actualCheckOut,
       'total_nights': totalNights,
       'total_price': totalPrice,
       'status': status,
