@@ -1,5 +1,22 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:io' show Platform;
+
 class AppConstants {
-  static const String BASE_URL = 'http://127.0.0.1:8000/api';
+  static String get BASE_URL {
+    if (kIsWeb) {
+      // untuk Web
+      return 'http://localhost:8000/api';
+    } else if (Platform.isAndroid) {
+      // Emulator
+      return 'http://10.0.2.2:8000/api';
+    } else if (Platform.isIOS) {
+      // device fisik (ip HP)
+      return 'http://localhost:8000/api';
+    } else {
+      // default
+      return 'http://localhost:8000/api';
+    }
+  }
 
   // API endpoints
   static const String LOGIN = '/login';
