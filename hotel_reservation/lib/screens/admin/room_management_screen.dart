@@ -1,50 +1,54 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../../models/room.dart';
-import '../../services/room_service.dart';
-import 'room_form_screen.dart';
+import '../../models/room_category.dart';
+import '../../services/room_category_service.dart';
+import 'category_form_screen.dart';
+import 'category_rooms_screen.dart';
 
 class RoomManagementScreen extends StatefulWidget {
   const RoomManagementScreen({Key? key}) : super(key: key);
 
   @override
-  State<RoomManagementScreen> createState() => _RoomManaagementScreenState();
+  State<RoomManagementScreen> createState() => _RoomManagementScreenState();
 }
 
-class _RoomManaagementScreenState extends State<RoomManagementScreen> {
-  List<Room> _rooms = [];
+class _RoomManagementScreenState extends State<RoomManagementScreen> {
+  List<RoomCategory> _categories = [];
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _loadRooms();
+    _loadCategories();
   }
 
-  Future<void> _loadRooms() async {
+  Future<void> _loadCategories() async {
     setState(() => _isLoading = true);
 
     try {
-      final rooms = await RoomService.getRooms();
+      final categories = await RoomCategoryService.getCategories();
       setState(() {
-        _rooms = rooms;
+        _categories = categories;
         _isLoading = false;
       });
     } catch (e) {
       setState(() => _isLoading = false);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
       }
     }
   }
 
-  Future<void> _deleteRoom(Room room) async {
+  Future<void> _deleteCategory(RoomCategory category) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Hapus Kamar'),
-        content: Text('Apakah Anda yakin ingin menghapus kamar ${room.roomNumber}?'),
+        title: const Text('Hapus Kategori'),
+        content: Text(
+          'Apakah Anda yakin ingin menghapus kategori ${category.name}?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -61,11 +65,11 @@ class _RoomManaagementScreenState extends State<RoomManagementScreen> {
 
     if (confirm == true) {
       try {
-        await RoomService.deleteRoom(room.id);
-        _loadRooms();
+        await RoomCategoryService.deleteCategory(category.id);
+        _loadCategories();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Kamar berhasil dihapus')),
+            const SnackBar(content: Text('Kategori berhasil dihapus')),
           );
         }
       } catch (e) {
@@ -84,102 +88,169 @@ class _RoomManaagementScreenState extends State<RoomManagementScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Kelola Kamar'),
-      ),
+      appBar: AppBar(title: const Text('Kelola Kamar')),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const RoomFormScreen()),
-          ).then((_) => _loadRooms());
+            MaterialPageRoute(builder: (_) => const CategoryFormScreen()),
+          ).then((_) => _loadCategories());
         },
         icon: const Icon(Icons.add),
-        label: const Text('Tambah Kamar'),
+        label: const Text('Tambah Kategori'),
       ),
       body: RefreshIndicator(
-        onRefresh: _loadRooms,
+        onRefresh: _loadCategories,
         child: _isLoading
             ? const Center(child: CircularProgressIndicator())
-            : _rooms.isEmpty
-                ? const Center(child: Text('Belum ada kamar'))
-                : ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: _rooms.length,
-                  itemBuilder: (context, index) {
-                    final room = _rooms[index];
-                    return _buildRoomCard(room);
-                  },
-                ),
+            : _categories.isEmpty
+            ? const Center(child: Text('Belum ada kategori kamar'))
+            : ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: _categories.length,
+                itemBuilder: (context, index) {
+                  final category = _categories[index];
+                  return _buildCategoryCard(category);
+                },
+              ),
       ),
     );
   }
 
-  Widget _buildRoomCard(Room room) {
+  Widget _buildCategoryCard(RoomCategory category) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
-      child: ListTile(
-        leading: CircleAvatar(
-          child: Text(room.roomNumber),
-        ),
-        title: Text(
-          room.roomType,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Kamar ${room.roomNumber}'),
-            Text('Rp ${room.price.toStringAsFixed(0)}/malam'),
-            Container(
-              margin: const EdgeInsets.only(top: 4),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: room.isAvailable() ? Colors.green : Colors.red,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                room.getStatusText(),
-                style: const TextStyle(color: Colors.white, fontSize: 12),
-              ),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => CategoryRoomsScreen(category: category),
             ),
-          ],
-        ),
-        trailing: PopupMenuButton(
-          itemBuilder: (context) => [
-            const PopupMenuItem(
-              value: 'edit',
-              child: Row(
-                children: [
-                  Icon(Icons.edit, size: 20),
-                  SizedBox(width: 8),
-                  Text('Edit'),
-                ],
-              ),
-            ),
-            const PopupMenuItem(
-              value: 'delete',
-              child: Row(
-                children: [
-                  Icon(Icons.delete, color: Colors.red, size: 20),
-                  SizedBox(width: 8),
-                  Text('Hapus', style: TextStyle(color: Colors.red)),
-                ],
-              ),
-            ),
-          ],
-          onSelected: (value) {
-            if (value == 'edit') {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => RoomFormScreen(room: room),
+          ).then((_) => _loadCategories());
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              // Image
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(8),
                 ),
-              ).then((_) => _loadRooms());
-            } else if (value == 'delete') {
-              _deleteRoom(room);
-            }
-          },
+                child: category.imageUrl != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          category.imageUrl!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) =>
+                              const Icon(Icons.hotel, size: 40),
+                        ),
+                      )
+                    : const Icon(Icons.hotel, size: 40),
+              ),
+              const SizedBox(width: 16),
+
+              // Info
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      category.name,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Rp ${category.price.toStringAsFixed(0)}/malam',
+                      style: const TextStyle(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(Icons.people, size: 16, color: Colors.grey),
+                        const SizedBox(width: 4),
+                        Text('${category.capacity} orang'),
+                        const SizedBox(width: 16),
+                        const Icon(
+                          Icons.meeting_room,
+                          size: 16,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(width: 4),
+                        Text('${category.roomsCount ?? 0} kamar'),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              // Actions
+              PopupMenuButton(
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'edit',
+                    child: Row(
+                      children: [
+                        Icon(Icons.edit, size: 20),
+                        SizedBox(width: 8),
+                        Text('Edit Kategori'),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'rooms',
+                    child: Row(
+                      children: [
+                        Icon(Icons.meeting_room, size: 20),
+                        SizedBox(width: 8),
+                        Text('Kelola Kamar'),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete, color: Colors.red, size: 20),
+                        SizedBox(width: 8),
+                        Text('Hapus', style: TextStyle(color: Colors.red)),
+                      ],
+                    ),
+                  ),
+                ],
+                onSelected: (value) {
+                  if (value == 'edit') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CategoryFormScreen(category: category),
+                      ),
+                    ).then((_) => _loadCategories());
+                  } else if (value == 'rooms') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CategoryRoomsScreen(category: category),
+                      ),
+                    ).then((_) => _loadCategories());
+                  } else if (value == 'delete') {
+                    _deleteCategory(category);
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,26 +1,24 @@
+import 'package:hotel_reservation/models/room_category.dart';
+
 class Room {
   final int id;
+  final int roomCategoryId;
   final String roomNumber;
-  final String roomType;
-  final double price;
-  final String? description;
-  final String? imageUrl;
   final String status;
-  final int capacity;
   final String? createdAt;
   final String? updatedAt;
 
+  // Relationship
+  final RoomCategory? category;
+
   Room({
     required this.id,
+    required this.roomCategoryId,
     required this.roomNumber,
-    required this.roomType,
-    required this.price,
-    this.description,
-    this.imageUrl,
     required this.status,
-    required this.capacity,
     this.createdAt,
     this.updatedAt,
+    this.category,
   });
 
   bool isAvailable() => status == 'available1';
@@ -40,31 +38,33 @@ class Room {
     }
   }
 
+  // Helper akses data kategori
+  String get roomType => category?.name ?? '-';
+  double get price => category?.price ?? 0;
+  String? get description => category?.description;
+  String? get imageUrl => category?.imageUrl;
+  int get capacity => category?.capacity ?? 2;
+
   factory Room.fromJson(Map<String, dynamic> json) {
     return Room(
       id: json['id'],
+      roomCategoryId: json['room_category_id'],
       roomNumber: json['room_number'],
-      roomType: json['room_type'],
-      price: double.parse(json['price'].toString()),
-      description: json['description'],
-      imageUrl: json['image_url'],
       status: json['status'],
-      capacity: json['capacity'] ?? 2,
       createdAt: json['created_at'],
       updatedAt: json['updated'],
+      category: json['category'] != null
+          ? RoomCategory.fromJson(json['category'])
+          : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'room_category_id': roomCategoryId,
       'room_number': roomNumber,
-      'room_type': roomType,
-      'price': price,
-      'description': description,
-      'image_url': imageUrl,
       'status': status,
-      'capacity': capacity,
       'created_at': createdAt,
       'updated_at': updatedAt,
     };

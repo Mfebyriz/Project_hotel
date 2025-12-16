@@ -7,9 +7,7 @@ class RoomService {
   static Future<List<Room>> getRooms({
     String? search,
     String? status,
-    String? roomType,
-    double? minPrice,
-    double? maxPrice,
+    int? categoryId,
   }) async {
     String endpoint = AppConstants.ROOMS;
     List<String> params = [];
@@ -20,14 +18,8 @@ class RoomService {
     if (status != null) {
       params.add('status=$status');
     }
-    if (roomType != null) {
-      params.add('room_type=$roomType');
-    }
-    if (minPrice != null) {
-      params.add('min_price=$minPrice');
-    }
-    if (maxPrice != null) {
-      params.add('max_price=$maxPrice');
+    if (categoryId != null) {
+      params.add('category_id=$categoryId');
     }
 
     if (params.isNotEmpty) {
@@ -58,9 +50,18 @@ class RoomService {
     return null;
   }
 
-  // Create room (Admin)
-  static Future<Room> createRoom(Map<String, dynamic> roomData) async {
-    final response = await ApiService.post(AppConstants.ROOMS, body: roomData);
+  // Create room (Admin) - hanya nomor kamar
+  static Future<Room> createRoom({
+    required int roomCategoryId,
+    required String roomNumber,
+  }) async {
+    final response = await ApiService.post(
+      AppConstants.ROOMS,
+      body: {
+        'room_category_id': roomCategoryId,
+        'room_number': roomNumber,
+      },
+    );
 
     if (response['success']) {
       return Room.fromJson(response['data']);
