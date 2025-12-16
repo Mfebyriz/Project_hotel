@@ -34,17 +34,17 @@ class Reservation extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(user::class);
     }
 
     public function room()
     {
-        return $this->belongsTo(rooms::class);
+        return $this->belongsTo(room::class);
     }
 
     public function payment()
     {
-        return $this->hasOne(payments::class);
+        return $this->hasOne(payment::class);
     }
 
     public function calculateTotalNights()

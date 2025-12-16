@@ -27,7 +27,7 @@ class Payment extends Model
 
     public function reservations()
     {
-        return $this->belongsTo(reservations::class);
+        return $this->belongsTo(reservation::class);
     }
 
     public function getTotalAmount()

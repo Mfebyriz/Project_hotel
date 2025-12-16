@@ -9,6 +9,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\RoomCategoryController;
 
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -17,6 +18,8 @@ Route::post('/login', [AuthController::class, 'login']);
 // Public - List rooms (tanpa auth)
 Route::get('/rooms', [RoomController::class, 'index']);
 Route::get('/rooms/{id}', [RoomController::class, 'show']);
+Route::get('/room-categories', [RoomCategoryController::class, 'index']);
+Route::get('/room-categories/{id}', [RoomCategoryController::class, 'show']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -37,7 +40,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/reservations/{id}/cancel', [ReservationController::class, 'cancel']);
 
     // Admin only routes
-    Route::middleware('admin')->group(function () {
+    Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+
+        // Room Categories
+        Route::post('/room-categories', [RoomCategoryController::class, 'store']);
+        Route::put('/room-categories/{id}', [RoomCategoryController::class, 'update']);
+        Route::delete('/room-categories/{id}', [RoomCategoryController::class, 'destroy']);
 
         // Room Management
         Route::post('/rooms', [RoomController::class, 'store']);

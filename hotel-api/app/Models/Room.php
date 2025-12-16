@@ -10,23 +10,18 @@ class Room extends Model
     use HasFactory;
 
     protected $fillable = [
+        'room_category_id',
         'room_number',
-        'room_type',
-        'price',
-        'description',
-        'image_url',
         'status',
-        'capacity'
     ];
 
-    protected $casts = [
-        'price' => 'decimal:2',
-        'capacity' => 'integer',
-    ];
+    public function category() {
+        return $this->belongsTo(RoomCategory::class, 'room_category_id');
+    }
 
     public function reservations()
     {
-        return $this->hasMany(reservations::class);
+        return $this->hasMany(reservation::class);
     }
 
     public function isAvailable()
@@ -34,12 +29,29 @@ class Room extends Model
         return $this->status === 'available';
     }
 
-    public function scopeAvailable($query, $search)
+    // Helper untuk akses data kategori
+    public function getRoomTypeAttribute()
     {
-        return $query->where(function ($q) use ($search) {
-            $q->where('room_number', 'Like', "%{$search}%")
-              ->orWhere('room_type', 'Like', "%{$search}%")
-              ->orWhere('description', 'Like', "%{$search}%");
-        });
+        return $this->category->name ?? '-';
+    }
+
+    public function getPriceAttribute()
+    {
+        return $this->category->price ?? 0;
+    }
+
+    public function getDescriptionAttribute()
+    {
+        return $this->category->description ?? '';
+    }
+
+    public function getImageUrlAttribute()
+    {
+        return $this->category->image_url ?? null;
+    }
+
+    public function getCapacityAttribute()
+    {
+        return $this->category->capacity ?? 2;
     }
 }

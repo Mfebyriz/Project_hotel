@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Room;
+use App\Models\RoomCategory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -38,26 +39,50 @@ class DatabaseSeeder extends Seeder
             'role' => 'customer',
         ]);
 
-        // Create Rooms
-        $roomTypes = [
-            ['type' => 'Standard', 'price' => 300000, 'capacity' => 2],
-            ['type' => 'Deluxe', 'price' => 500000, 'capacity' => 2],
-            ['type' => 'Suite', 'price' => 800000, 'capacity' => 4],
-            ['type' => 'Family', 'price' => 1000000, 'capacity' => 6],
+        // Create Room Categories
+        $categories = [
+            [
+                'name' => 'Standard',
+                'price' => 300000,
+                'description' => 'Kamar standard dengan fasilitas lengkap',
+                'capacity' => 2,
+                'image_url' => 'https://via.placeholder.com/400x300?text=Standard+Room',
+            ],
+            [
+                'name' => 'Deluxe',
+                'price' => 500000,
+                'description' => 'Kamar deluxe dengan pemandangan kota',
+                'capacity' => 2,
+                'image_url' => 'https://via.placeholder.com/400x300?text=Deluxe+Room',
+            ],
+            [
+                'name' => 'Suite',
+                'price' => 800000,
+                'description' => 'Kamar suite mewah dengan ruang tamu',
+                'capacity' => 4,
+                'image_url' => 'https://via.placeholder.com/400x300?text=Suite+Room',
+            ],
+            [
+                'name' => 'Family',
+                'price' => 1000000,
+                'description' => 'Kamar keluarga luas dengan 2 kamar tidur',
+                'capacity' => 6,
+                'image_url' => 'https://via.placeholder.com/400x300?text=Family+Room',
+            ],
         ];
 
-        foreach ($roomTypes as $index => $roomType) {
+        foreach ($categories as $categoryData) {
+            $category = RoomCategory::create($categoryData);
+
+            // Create 5 rooms for each category
             for ($i = 1; $i <= 5; $i++) {
-                $roomNumber = ($index + 1) . str_pad($i, 2, '0', STR_PAD_LEFT);
+                $floor = array_search($categoryData['name'], array_column($categories, 'name')) + 1;
+                $roomNumber = $floor . str_pad($i, 2, '0', STR_PAD_LEFT);
 
                 Room::create([
+                    'room_category_id' => $category->id,
                     'room_number' => $roomNumber,
-                    'room_type' => $roomType['type'],
-                    'price' => $roomType['price'],
-                    'description' => "Kamar {$roomType['type']} dengan fasilitas lengkap",
-                    'image_url' => "https://via.placeholder.com/400x300?text=Room+{$roomNumber}",
                     'status' => 'available',
-                    'capacity' => $roomType['capacity'],
                 ]);
             }
         }

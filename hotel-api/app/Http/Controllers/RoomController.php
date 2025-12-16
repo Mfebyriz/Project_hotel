@@ -10,32 +10,24 @@ class RoomController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Room::query();
+        $query = Room::with('category');
 
-        // Search
-        if ($request->has('search')) {
-            $query->search($request->search);
-        }
-
-        // filter by status
+        // Filter by status
         if ($request->has('status')) {
             $query->where('status', $request->status);
         }
 
-        //Filter by room_type
-        if ($request->has('room_type')) {
-            $query->where('room_tpe', $request->room_type);
+        // Filter by category
+        if ($request->has('category_id')) {
+            $query->where('room_category_id', $request->category_id);
         }
 
-        // Filter by price range
-        if ($request->has('min_price')) {
-            $query->where('price', '>=', $request->min_price);
-        }
-        if ($request->has('max_price')) {
-            $query->where('price', '<=', $request->max_price);
+        // Search by room number
+        if ($request->has('search')) {
+            $query->where('room_number', 'like', "%{$request->search}%");
         }
 
-        $rooms = $query->paginate($request->per_page ?? 10);
+        $rooms = $query->paginate($request->per_page ?? 20);
 
         return response()->json([
             'success' => true,
@@ -45,7 +37,7 @@ class RoomController extends Controller
 
     public function show($id)
     {
-        $room = Room::findOrFail($id);
+        $room = Room::with('category')->findOrFail($id);
 
         return response()->json([
             'success' => true,
@@ -56,18 +48,20 @@ class RoomController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'room_category_id' => 'required|exists:room_categories,id',
             'room_number' => 'required|string|unique:rooms',
-            'room_type' => 'required|string',
-            'price' => 'required|numeric|min:0',
-            'description' => 'nullable|string',
-            'image_url' => 'nullable|string',
-            'capacity' => 'nullable|integer|min:1',
         ]);
 
-        $room = Room::created($request->all());
+        $room = Room::create([
+            'room_category_id' => $request->room_category_id,
+            'room_number' => $request->room_number,
+            'status' => 'available',
+        ]);
+
+        $room->load('category');
 
         return response()->json([
-            'succsess' => true,
+            'success' => true,
             'message' => 'Room created successfully',
             'data' => $room,
         ], 201);
@@ -79,15 +73,12 @@ class RoomController extends Controller
 
         $request->validate([
             'room_number' => 'sometimes|string|unique:rooms,room_number,' . $id,
-            'room_type' => 'sometimes|string',
-            'price' => 'sometimes|numeric|min:0',
-            'description' => 'nullable|string',
-            'image_url' => 'nullable|string',
             'status' => 'sometimes|in:available,occupied,maintenance',
-            'capacity' => 'nullable|integer|min:1',
+            'room_category_id' => 'sometimes|exists:room_categories,id',
         ]);
 
         $room->update($request->all());
+        $room->load('category');
 
         return response()->json([
             'success' => true,
