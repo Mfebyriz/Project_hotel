@@ -1,36 +1,54 @@
-import 'package:hotel_reservation/models/room_category.dart';
-
 class Room {
   final int id;
-  final int roomCategoryId;
+  final int categoryId;
   final String roomNumber;
+  final int? floor;
   final String status;
-  final String? createdAt;
-  final String? updatedAt;
-
-  // Relationship
+  final String? description;
+  final double? sizeSqm;
   final RoomCategory? category;
 
   Room({
     required this.id,
-    required this.roomCategoryId,
+    required this.categoryId,
     required this.roomNumber,
+    this.floor,
     required this.status,
-    this.createdAt,
-    this.updatedAt,
+    this.description,
+    this.sizeSqm,
     this.category,
   });
 
-  bool isAvailable() => status == 'available1';
-  bool isOccupied() => status == 'occupied';
-  bool isMaintenance() => status == 'maintenance';
+  factory Room.fromJson(Map<String, dynamic> json) {
+    return Room(
+      id: json['id'],
+      categoryId: json['category_id'],
+      roomNumber: json['room_number'],
+      floor: json['floor'],
+      status: json['status'],
+      description: json['description'],
+      sizeSqm: json['size_sqm'] != null
+          ? double.parse(json['size_sqm'].toString())
+          : null,
+      category: json['category'] != null
+          ? RoomCategory.fromJson(json['category'])
+          : null,
+    );
+  }
 
-  String getStatusText() {
+  bool get isAvailable => status == 'available';
+  bool get isOccupied => status == 'occupied';
+  bool get isReserved => status == 'reserved';
+  bool get isMaintenance => status == 'maintenance';
+
+  String get statusText {
     switch (status) {
       case 'available':
         return 'Tersedia';
       case 'occupied':
         return 'Terisi';
+      case 'reserved':
+        return 'Direservasi';
       case 'maintenance':
         return 'Maintenance';
       default:
@@ -38,35 +56,6 @@ class Room {
     }
   }
 
-  // Helper akses data kategori
-  String get roomType => category?.name ?? '-';
-  double get price => category?.price ?? 0;
-  String? get description => category?.description;
+  // Get image from category
   String? get imageUrl => category?.imageUrl;
-  int get capacity => category?.capacity ?? 2;
-
-  factory Room.fromJson(Map<String, dynamic> json) {
-    return Room(
-      id: json['id'],
-      roomCategoryId: json['room_category_id'],
-      roomNumber: json['room_number'],
-      status: json['status'],
-      createdAt: json['created_at'],
-      updatedAt: json['updated'],
-      category: json['category'] != null
-          ? RoomCategory.fromJson(json['category'])
-          : null,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'room_category_id': roomCategoryId,
-      'room_number': roomNumber,
-      'status': status,
-      'created_at': createdAt,
-      'updated_at': updatedAt,
-    };
-  }
 }

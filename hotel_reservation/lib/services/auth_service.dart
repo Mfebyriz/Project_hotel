@@ -1,83 +1,110 @@
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:hotel_reservation/config/constants.dart';
 import 'package:hotel_reservation/models/user.dart';
-import 'api_service.dart';
+import 'package:hotel_reservation/services/api_service.dart';
+import 'package:hotel_reservation/services/storage_service.dart';
+import 'package:hotel_reservation/config/api_config.dart';
 
 class AuthService {
-  //Register
-  static Future<Map<String, dynamic>> register({
+  final ApiService _apiService = ApiService();
+  final StorageService _storageService = StorageService();
+
+  Future<Map<String, dynamic>> login(String email, String password) async {
+    try {
+      final response = await _apiService.post(
+        ApiConfig.login,
+        data: {
+          'email': email,
+          'password': password,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        final token = data['token'];
+        final user = User.fromJson(data['user']);
+
+        await _storageService.saveToken(token);
+        await _storageService.saveUser(user);
+
+        return {
+          'success': true,
+          'user': user,
+          'token': token,
+        };
+      }
+
+      return {
+        'success': false,
+        'message': 'Login failed',
+      };
+    } catch (e) {
+      return {
+        'success': false,
+        'message': e.toString(),
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> register({
     required String name,
     required String email,
-    required String password,
-    required String passwordConfirmation,
-    String? phone,
-  }) async {
-    final response = await ApiService.post(
-      AppConstants.REGISTER,
-      body: {
-        'name': name,
-        'email': email,
-        'password': password,
-        'password_confirmation': passwordConfirmation,
-        'phone': phone,
-      },
-      requiresAuth: false,
-    );
-
-    if (response['success']) {
-      final token = response['data']['token'];
-      final user = User.fromJson(response['data']['user']);
-
-      await _saveAuthData(token, user);
-
-      return {'success': true, 'user': user, 'token': token};
-    }
-
-    throw Exception(response['message'] ?? 'Registration failed');
-  }
-
-  //Login
-  static Future<Map<String, dynamic>> login({
-    required String email,
+    required String phone,
     required String password,
   }) async {
-    final response = await ApiService.post(
-      AppConstants.LOGIN,
-      body: {'email': email, 'password': password},
-      requiresAuth: false,
-    );
-
-    if (response['success']) {
-      final token = response['data']['token'];
-      final user = User.fromJson(response['data']['user']);
-
-      await _saveAuthData(token, user);
-
-      return {'success': true, 'user': user, 'token': token};
-    }
-
-    throw Exception(response['message'] ?? 'Login failed');
-  }
-
-  //Logout
-  static Future<void> Logout() async {
     try {
-      await ApiService.post(AppConstants.LOGOUT);
+      final response = await _apiService.post(
+        ApiConfig.register,
+        data: {
+          'name': name,
+          'email': email,
+          'phone': phone,
+          'password': password,
+          'password_confirmation': password,
+        },
+      );
+
+      if (response.statusCode == 201) {
+        final data = response.data;
+        final token = data['token'];
+        final user = User.fromJson(data['user']);
+
+        await _storageService.saveToken(token);
+        await _storageService.saveUser(user);
+
+        return {
+          'success': true,
+          'user': user,
+          'token': token,
+        };
+      }
+
+      return {
+        'success': false,
+        'message': 'Registration failed',
+      };
     } catch (e) {
-      // clear local data
-    } finally {
-      await _clearAuthData();
+      return {
+        'success': false,
+        'message': e.toString(),
+      };
     }
   }
 
-  // Get Current User
-  static Future<User?> getCurrentUser() async {
+  Future<void> logout() async {
     try {
-      final response = await ApiService.get(AppConstants.ME);
+      await _apiService.post(ApiConfig.logout);
+    } catch (e) {
+      // Ignore error
+    }
+    await _storageService.clearAll();
+  }
 
-      if (response['success']) {
-        return User.fromJson(response['data']);
+  Future<User?> getCurrentUser() async {
+    try {
+      final response = await _apiService.get(ApiConfig.me);
+      if (response.statusCode == 200) {
+        final user = User.fromJson(response.data['user']);
+        await _storageService.saveUser(user);
+        return user;
       }
     } catch (e) {
       return null;
@@ -85,41 +112,8 @@ class AuthService {
     return null;
   }
 
-  // Check if logged in
-  static Future<bool> isLoggedIn() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString(AppConstants.TOKEN_KEY);
-    return token != null && token.isNotEmpty;
-  }
-
-  // Get saved user
-  static Future<User?> getSavedUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userJson = prefs.getString(AppConstants.USER_KEY);
-
-    if (userJson != null) {
-      return User.fromJson(jsonDecode(userJson));
-    }
-    return null;
-  }
-
-  // Get token
-  static Future<String?> getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(AppConstants.TOKEN_KEY);
-  }
-
-  // Private: Save auth data
-  static Future<void> _saveAuthData(String token, User user) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(AppConstants.TOKEN_KEY, token);
-    await prefs.setString(AppConstants.USER_KEY, jsonEncode(user.toJson()));
-  }
-
-  // Private: Clear auth data
-  static Future<void> _clearAuthData() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(AppConstants.TOKEN_KEY);
-    await prefs.remove(AppConstants.USER_KEY);
+  Future<bool> isLoggedIn() async {
+    final token = await _storageService.getToken();
+    return token != null;
   }
 }

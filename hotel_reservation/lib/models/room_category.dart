@@ -1,37 +1,34 @@
 class RoomCategory {
   final int id;
   final String name;
-  final double price;
   final String? description;
-  final String? imageUrl;
-  final int capacity;
-  final int? roomsCount;
-  final String? createdAt;
-  final String? updatedAt;
+  final double basePrice;
+  final int maxGuests;
+  final List<String> amenities;
+  final String? imageUrl;  // Single image per category
+  final bool isActive;
 
   RoomCategory({
     required this.id,
     required this.name,
-    required this.price,
     this.description,
+    required this.basePrice,
+    required this.maxGuests,
+    required this.amenities,
     this.imageUrl,
-    required this.capacity,
-    this.roomsCount,
-    this.createdAt,
-    this.updatedAt,
+    required this.isActive,
   });
 
   factory RoomCategory.fromJson(Map<String, dynamic> json) {
     return RoomCategory(
       id: json['id'],
       name: json['name'],
-      price: double.parse(json['price'].toString()),
       description: json['description'],
-      imageUrl: json['image_url'],
-      capacity: json['capacity'] ?? 2,
-      roomsCount: json['rooms_count'],
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
+      basePrice: double.parse(json['base_price'].toString()),
+      maxGuests: json['max_guests'],
+      amenities: List<String>.from(json['amenities'] ?? []),
+      imageUrl: json['image_url'] ?? json['image_full_url'],
+      isActive: json['is_active'] ?? true,
     );
   }
 
@@ -39,12 +36,12 @@ class RoomCategory {
     return {
       'id': id,
       'name': name,
-      'price': price,
       'description': description,
+      'base_price': basePrice,
+      'max_guests': maxGuests,
+      'amenities': amenities,
       'image_url': imageUrl,
-      'capacity': capacity,
-      'created_at': createdAt,
-      'update_at': updatedAt,
+      'is_active': isActive,
     };
   }
 }

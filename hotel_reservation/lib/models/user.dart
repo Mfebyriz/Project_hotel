@@ -4,9 +4,8 @@ class User {
   final String email;
   final String? phone;
   final String role;
-  final String? emailVerifiedAt;
-  final String? createdAt;
-  final String? updateAt;
+  final String? profileImage;
+  final bool isActive;
 
   User({
     required this.id,
@@ -14,13 +13,9 @@ class User {
     required this.email,
     this.phone,
     required this.role,
-    this.emailVerifiedAt,
-    this.createdAt,
-    this.updateAt,
+    this.profileImage,
+    required this.isActive,
   });
-
-  bool isAdmin() => role == 'admin';
-  bool isCustomer() => role == 'customer';
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
@@ -29,9 +24,8 @@ class User {
       email: json['email'],
       phone: json['phone'],
       role: json['role'],
-      emailVerifiedAt: json['email_verified_at'],
-      createdAt: json['created_at'],
-      updateAt: json['updated_at'],
+      profileImage: json['profile_image'],
+      isActive: json['is_active'] ?? true,
     );
   }
 
@@ -42,9 +36,11 @@ class User {
       'email': email,
       'phone': phone,
       'role': role,
-      'email_verifed_at': emailVerifiedAt,
-      'created_at': createdAt,
-      'updated_at': updateAt,
+      'profile_image': profileImage,
+      'is_active': isActive,
     };
   }
+
+  bool get isAdmin => role == 'admin';
+  bool get isCustomer => role == 'customer';
 }

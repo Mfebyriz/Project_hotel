@@ -1,107 +1,97 @@
-import 'user.dart';
-import 'room.dart';
-import 'payment.dart';
-
 class Reservation {
   final int id;
+  final String bookingCode;
   final int userId;
   final int roomId;
-  final String checkInDate;
-  final String checkOutDate;
-  final String? actualCheckIn;
-  final String? actualCheckOut;
+  final DateTime checkInDate;
+  final DateTime checkOutDate;
+  final int numGuests;
   final int totalNights;
+  final double pricePerNight;
   final double totalPrice;
-  final String status;
-  final String? notes;
-  final String? createdAt;
-  final String? updatedAt;
-
-  // Relationships
+  final String status;  // confirmed, checked_in, checked_out, cancelled (no pending)
+  final String? specialRequests;
+  final DateTime? checkedInAt;
+  final DateTime? checkedOutAt;
+  final DateTime? cancelledAt;
+  final String? cancellationReason;
   final User? user;
   final Room? room;
-  final Payment? payment;
+  final DateTime createdAt;
 
   Reservation({
     required this.id,
+    required this.bookingCode,
     required this.userId,
     required this.roomId,
     required this.checkInDate,
     required this.checkOutDate,
-    this.actualCheckIn,
-    this.actualCheckOut,
+    required this.numGuests,
     required this.totalNights,
+    required this.pricePerNight,
     required this.totalPrice,
     required this.status,
-    this.notes,
-    this.createdAt,
-    this.updatedAt,
+    this.specialRequests,
+    this.checkedInAt,
+    this.checkedOutAt,
+    this.cancelledAt,
+    this.cancellationReason,
     this.user,
     this.room,
-    this.payment,
+    required this.createdAt,
   });
 
-  String getStatusText() {
+  factory Reservation.fromJson(Map<String, dynamic> json) {
+    return Reservation(
+      id: json['id'],
+      bookingCode: json['booking_code'],
+      userId: json['user_id'],
+      roomId: json['room_id'],
+      checkInDate: DateTime.parse(json['check_in_date']),
+      checkOutDate: DateTime.parse(json['check_out_date']),
+      numGuests: json['num_guests'],
+      totalNights: json['total_nights'],
+      pricePerNight: double.parse(json['price_per_night'].toString()),
+      totalPrice: double.parse(json['total_price'].toString()),
+      status: json['status'],
+      specialRequests: json['special_requests'],
+      checkedInAt: json['checked_in_at'] != null
+          ? DateTime.parse(json['checked_in_at'])
+          : null,
+      checkedOutAt: json['checked_out_at'] != null
+          ? DateTime.parse(json['checked_out_at'])
+          : null,
+      cancelledAt: json['cancelled_at'] != null
+          ? DateTime.parse(json['cancelled_at'])
+          : null,
+      cancellationReason: json['cancellation_reason'],
+      user: json['user'] != null ? User.fromJson(json['user']) : null,
+      room: json['room'] != null ? Room.fromJson(json['room']) : null,
+      createdAt: DateTime.parse(json['created_at']),
+    );
+  }
+
+  bool get isConfirmed => status == 'confirmed';
+  bool get isCheckedIn => status == 'checked_in';
+  bool get isCheckedOut => status == 'checked_out';
+  bool get isCancelled => status == 'cancelled';
+
+  bool get canCheckIn => isConfirmed && checkInDate.isSameDay(DateTime.now());
+  bool get canCheckOut => isCheckedIn;
+  bool get canCancel => isConfirmed;
+
+  String get statusText {
     switch (status) {
-      case 'pending':
-        return 'Menunggu';
       case 'confirmed':
         return 'Dikonfirmasi';
       case 'checked_in':
-        return 'Check-in';
+        return 'Sedang Menginap';
       case 'checked_out':
-        return 'Check-out';
+        return 'Selesai';
       case 'cancelled':
         return 'Dibatalkan';
       default:
         return 'Unknown';
     }
-  }
-
-  bool isPending() => status == 'pending';
-  bool isConfirmed() => status == 'confirmed';
-  bool isCheckedIn() => status == 'checked_in';
-  bool isCheckedOut() => status == 'checked_out';
-  bool isCancelled() => status == 'cancelled';
-
-  factory Reservation.fromJson(Map<String, dynamic> json) {
-    return Reservation(
-      id: json['id'],
-      userId: json['user_id'],
-      roomId: json['room_id'],
-      checkInDate: json['check_in_date'],
-      checkOutDate: json['check_out_date'],
-      actualCheckIn: json['actual_check_in'],
-      actualCheckOut: json['actual_check_out'],
-      totalNights: json['total_nights'],
-      totalPrice: double.parse(json['total_price'].toString()),
-      status: json['status'],
-      notes: json['notes'],
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
-      user: json['user'] != null ? User.fromJson(json['user']) : null,
-      room: json['room'] != null ? Room.fromJson(json['room']) : null,
-      payment: json['payment'] != null
-          ? Payment.fromJson(json['payment'])
-          : null,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'user_id': userId,
-      'room_id': roomId,
-      'check_in_date': checkInDate,
-      'check_out_date': checkOutDate,
-      'actual_check_in': actualCheckIn,
-      'actual_check_out': actualCheckOut,
-      'total_nights': totalNights,
-      'total_price': totalPrice,
-      'status': status,
-      'notes': notes,
-      'created_at': createdAt,
-      'updated_at': updatedAt,
-    };
   }
 }
